@@ -1,0 +1,41 @@
+<?php
+
+
+namespace App\Utils;
+
+
+use App\Helpers\HttpHelper;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+
+class Ip
+{
+    use HttpHelper;
+
+    /**
+     * 根据ip获取详细信息
+     * @param string $ip
+     * @return array
+     * author II
+     */
+    public static function getIpInfo(string $ip): array
+    {
+        try {
+            $client = new Client(['timeout' => 5.0]);
+            $response = $client->request('GET',
+                "http://ip-api.com/json/$ip?lang=zh-CN"
+            );
+            $result = self::getContentFromResponse($response);
+            if (!$result) {
+                return [];
+            }
+            if ($result['status'] != 'success') {
+                return [];
+            }
+            return $result;
+        } catch (\Exception | GuzzleException $exception) {
+            return [];
+        }
+    }
+
+}
